@@ -20,7 +20,7 @@ def run_scraper_endpoint():
     """Runs the scraper and returns the results as an Excel file."""
     print("Scraper job started via API request...")
 
-    list_of_results = run_full_scrape(2)
+    list_of_results = run_full_scrape()
 
     if not list_of_results:
         print("Scraping returned no results.")
