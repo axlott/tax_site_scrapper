@@ -95,8 +95,9 @@ def run_full_scrape() -> List[Dict[str, Any]]:
     """
     Runs the entire scraping process through all queries and pages.
     """
-    queries = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G",
-               "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+    # --- MODIFIED FOR BETA ---
+    # Only run the query for "0" for the client's test.
+    queries = ["0"]
 
     all_accounts = []
 
