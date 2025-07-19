@@ -1,0 +1,7 @@
+venv/
+.vscode/
+__pycache__/
+beta_site/
+test_files/
+*.xlsx
+*.csv
