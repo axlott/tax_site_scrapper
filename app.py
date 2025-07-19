@@ -1,50 +1,59 @@
-# Save this as app.py
 import json
 from io import BytesIO
 
 import pandas as pd
-from flask import Flask, Response, request
+from flask import Flask, Response, render_template
 
-from request_API import \
-    run_full_scrape  # Assume your main logic is in a function
+from request_API import run_full_scrape
 
 app = Flask(__name__)
 
-# This is the secret endpoint your client's webpage will call
+
+@app.route('/')
+def index():
+    """Serves the frontend HTML page."""
+    return render_template('index.html')
 
 
 @app.route('/run-scraper', methods=['POST'])
 def run_scraper_endpoint():
-    # You could add a secret key here for extra security
-    # secret_key = request.json.get('key')
-    # if secret_key != 'my-secret-beta-key':
-    #     return "Unauthorized", 401
+    """Runs the scraper and returns the results as an Excel file."""
+    print("Scraper job started via API request...")
 
-    print("Scraper job started...")
-
-    # Run your main scraping function which returns the data
-    # For simplicity, let's assume it returns a list of dicts
     list_of_results = run_full_scrape()
 
-    # Convert the list of dictionaries to a CSV string
     if not list_of_results:
+        print("Scraping returned no results.")
         return "No results found.", 404
 
-    csv_string = BytesIO()
-    df = pd.read_json(json.dumps(
-        list_of_results, indent=4, ensure_ascii=False))
-    df.to_excel(csv_string, index=True)
+    print(
+        f"Scraping finished. Found {len(list_of_results)} records. Preparing Excel file.")
 
-    # Send the CSV back as a file download
+    # Use an in-memory buffer for the Excel file
+    output_buffer = BytesIO()
+    df = pd.DataFrame(list_of_results)
+
+    # Use the XlsxWriter engine for better compatibility
+    with pd.ExcelWriter(output_buffer, engine='xlsxwriter') as writer:
+        df.to_excel(writer, index=False, sheet_name='ScrapedData')
+        # Auto-adjust columns' width
+        for column in df:
+            column_length = max(df[column].astype(
+                str).map(len).max(), len(column))
+            col_idx = df.columns.get_loc(column)
+            writer.sheets['ScrapedData'].set_column(
+                col_idx, col_idx, column_length)
+
+    # Important: seek to the beginning of the buffer before sending
+    output_buffer.seek(0)
+
     return Response(
-        csv_string.getvalue(),
-        # mimetype="text/csv",
+        output_buffer.getvalue(),
         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers={"Content-disposition":
-                 "attachment; filename=beta-results.xlsx"},
-        status=200)
+        headers={"Content-Disposition": "attachment; filename=scraped_tax_data.xlsx"},
+        status=200
+    )
 
 
 if __name__ == '__main__':
-    # You would run this on a simple server (like PythonAnywhere, Heroku, etc.)
     app.run(debug=True)

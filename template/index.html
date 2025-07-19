@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beta Scraper Control Panel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Scraper Control Panel</h1>
+        <p>Click the button below to begin the full data scrape. The process may take several minutes. Once complete, an Excel file will be downloaded automatically.</p>
+        <button id="scrapeButton">▶️ Start Scrape & Download Results</button>
+        <div id="status">
+            <div class="spinner" id="spinner" style="display: none;"></div>
+            <span id="statusText">Ready.</span>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
