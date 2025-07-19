@@ -91,7 +91,7 @@ def get_page_details(soup: BeautifulSoup, query: str, page: int) -> List[Dict[st
     return results
 
 
-def run_full_scrape() -> List[Dict[str, Any]]:
+def run_full_scrape(page_limit=None) -> List[Dict[str, Any]]:
     """
     Runs the entire scraping process through all queries and pages.
     """
@@ -103,7 +103,7 @@ def run_full_scrape() -> List[Dict[str, Any]]:
 
     try:
         for query in queries:
-            all_accounts = run_scrape(query, all_accounts)
+            all_accounts = run_scrape(query, all_accounts, page_limit)
 
         print(
             f"\n--- Scraping Complete. Total accounts found: {len(all_accounts)} ---")
